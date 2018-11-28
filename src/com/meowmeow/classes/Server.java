@@ -289,7 +289,7 @@ public class Server implements AutoCloseable {
      * @param rtn from the parent method
      */
     private void serverWinProtocol(final UUID userId, final int betMoney, @NotNull StringBuilder rtn) {
-        //in the case of client winning
+        //in the case of client losing
         serverData.computeIfPresent(userId, (k,v) -> v - betMoney);
         var cash = serverData.get(userId);
         rtn.append("You lost! Your current money is ").append(cash).append("\n");
