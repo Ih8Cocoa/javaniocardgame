@@ -8,8 +8,7 @@ First, start the server by compiling the MainServer.java file.
 
 Then compile and start the MainClient.java file
 
+All of the necessary Javadoc are inside the code.
+
 # Additional suggestions and improvements
 If you have a better idea than me about how this code works, feel free to submit a pull request.
-
-# But you said you have documented the code properly
-...sshhhhhhhhhh...
