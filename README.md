@@ -10,3 +10,6 @@ Then compile and start the MainClient.java file
 
 # Additional suggestions and improvements
 If you have a better idea than me about how this code works, feel free to submit a pull request.
+
+# But you said you have documented the code properly
+...sshhhhhhhhhh...
