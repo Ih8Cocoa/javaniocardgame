@@ -1,4 +1,4 @@
-package com.meowmeow;
+package com.meowmeow.classes;
 
 import org.jetbrains.annotations.NotNull;
 

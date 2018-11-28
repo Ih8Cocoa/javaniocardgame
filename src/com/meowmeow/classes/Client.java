@@ -1,4 +1,4 @@
-package com.meowmeow;
+package com.meowmeow.classes;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

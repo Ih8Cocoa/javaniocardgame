@@ -1,5 +1,7 @@
 package com.meowmeow;
 
+import com.meowmeow.classes.Client;
+
 import java.util.Scanner;
 
 public class MainClient {

@@ -1,5 +1,7 @@
 package com.meowmeow;
 
+import com.meowmeow.classes.Server;
+
 public class MainServer {
 
     public static void main(String[] args) {
