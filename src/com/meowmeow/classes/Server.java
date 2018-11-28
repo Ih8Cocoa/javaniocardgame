@@ -143,7 +143,14 @@ public class Server implements AutoCloseable {
 
         // read and decode the user query
         System.out.println("Reading the request");
-        socketChannel.read(byteBuffer);
+        // bug fix: If the client crashes oddly, catch Broken Pipe IOException to cancel the key
+        try {
+            socketChannel.read(byteBuffer);
+        } catch (IOException e) {
+            System.out.println("Weird crash but ok\n");
+            key.cancel();
+            return;
+        }
         byteBuffer.flip();
         var charBuffer = StandardCharsets.ISO_8859_1.decode(byteBuffer);
         var query = new String(charBuffer.array()).toLowerCase();
@@ -161,13 +168,11 @@ public class Server implements AutoCloseable {
 
         // send output to client
         byteBuffer = StandardCharsets.ISO_8859_1.encode(serverOutput);
-        byteBuffer.compact();
-        byteBuffer.flip();
-        // bug fix: If the client quits, catch Broken Pipe IOException to cancel the key
+        // bug fix: If the client crashes oddly, catch Broken Pipe IOException to cancel the key
         try {
             socketChannel.write(byteBuffer);
         } catch (IOException e) {
-            System.out.println("A client has disconnected from the server\n");
+            System.out.println("Weird crash but ok\n");
             key.cancel();
         }
 

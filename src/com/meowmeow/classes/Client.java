@@ -27,8 +27,6 @@ public class Client implements AutoCloseable {
     public String query(String query) throws IOException {
         //encode query and send to server
         var buffer = StandardCharsets.ISO_8859_1.encode(query);
-        buffer.compact();
-        buffer.flip();
         socketChannel.write(buffer);
 
         //receive response from server and decode to string
