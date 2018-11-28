@@ -1,6 +1,6 @@
 package com.meowmeow.classes;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * <h3>Card class</h3>
@@ -42,10 +42,10 @@ public class Card {
      * Creates a random card
      */
     public Card() {
-        var random = new Random();
+        var random = new SecureRandom();
         var allTypes = Type.values();
         var allSuits = Suit.values();
-        this.type = allTypes[random.nextInt(9)];
+        this.type = allTypes[random.nextInt(10)];
         this.suit = allSuits[random.nextInt(4)];
     }
 

@@ -12,18 +12,18 @@ import org.jetbrains.annotations.NotNull;
  *     <li>The Ace-of-Diamond fallback system</li>
  * </ul>
  *
- * <p>Whether or not a side is the winner would be determined after a maximum amount of 3 stages:</p>
+ * <p>Whether or not a side is the winner would be determined after a maximum number of 3 stages:</p>
  * <ul>
  *     <li>
- *         <strong>Stage 1:</strong> Which side has the bigger point is the winner.
+ *         <strong>Stage 1:</strong> The side having the bigger point is the winner.
  *         If both sides have equal points, move to stage 2
  *     </li>
  *     <li>
- *         <strong>Stage 2:</strong> Which side has the bigger suit point is the winner
+ *         <strong>Stage 2:</strong> The side having the bigger suit point is the winner
  *         If both sides have equal points and suit points, move to stage 3
  *     </li>
  *     <li>
- *         <strong>Stage 3:</strong> Which side has the Ace of Diamond card is the winner
+ *         <strong>Stage 3:</strong> The side having the Ace of Diamond card is the winner
  *     </li>
  * </ul>
  * <p>

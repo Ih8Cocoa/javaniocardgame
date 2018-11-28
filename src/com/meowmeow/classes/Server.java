@@ -193,7 +193,10 @@ public class Server implements AutoCloseable {
         if (query.equals("new-user")) {
             System.out.println("Creating a new user...");
             var newId = UUID.randomUUID();
-            this.serverData.put(newId, START_MONEY);
+            //just in case the ID already exists
+            while (this.serverData.put(newId, START_MONEY) != null) {
+                newId = UUID.randomUUID();
+            }
             return "user-id " + newId + " amount " + START_MONEY;
         }
 
