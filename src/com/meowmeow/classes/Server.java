@@ -80,7 +80,15 @@ public class Server implements AutoCloseable {
     }
 
     /**
-     * Starts the server.
+     * <p>Starts the server to process the queries.</p>
+     *
+     * <p>The client connection lifecycle within the server is as follows:</p>
+     * <ul>
+     *     <li>Accepts the connection</li>
+     *     <li>Read, processes the query from the connection, and send back a response</li>
+     *     <li>Terminate the connection</li>
+     * </ul>
+     *
      * @throws IOException to be handled in main
      */
     @SuppressWarnings("InfiniteLoopStatement")
@@ -100,6 +108,8 @@ public class Server implements AutoCloseable {
                 } else if (key.isReadable()) {
                     processRequest(key);
                     keys.remove(key);
+                    //cancel the key after read operation
+                    key.cancel();
                 }
             }
         }
