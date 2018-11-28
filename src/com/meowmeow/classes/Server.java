@@ -86,10 +86,12 @@ public class Server implements AutoCloseable {
     @SuppressWarnings("InfiniteLoopStatement")
     public void startServer() throws IOException {
         while (true) {
+            // server is ready
             System.out.println("Server is waiting for events...");
             var select = selector.select();
             System.out.printf("Received %d events\n", select);
 
+            //get all the keys from selector, and loop through each of them
             var keys = selector.selectedKeys();
             for (var key : keys) {
                 if (key.isAcceptable()) {
@@ -125,18 +127,19 @@ public class Server implements AutoCloseable {
      * @throws IOException bounce this exception to main
      */
     private void processRequest(@NotNull SelectionKey key) throws IOException {
-        // reading the query from client
-        var query = "";
-        System.out.println("Reading the request");
+        // get socket channel and prepare the reading buffer
         var socketChannel = (SocketChannel) key.channel();
         var byteBuffer = ByteBuffer.allocate(1048576);
+
+        // read and decode the user query
+        System.out.println("Reading the request");
         socketChannel.read(byteBuffer);
         byteBuffer.flip();
         var charBuffer = StandardCharsets.ISO_8859_1.decode(byteBuffer);
-        query = new String(charBuffer.array()).toLowerCase();
+        var query = new String(charBuffer.array()).toLowerCase();
         System.out.println("Read query: " + query);
 
-        //process the query
+        // process the query
         var serverOutput = "";
         try {
             serverOutput = gameSession(query);
@@ -146,7 +149,7 @@ public class Server implements AutoCloseable {
 
         System.out.println("Sending to client: " + serverOutput + "\n");
 
-        //send output to client
+        // send output to client
         byteBuffer = StandardCharsets.ISO_8859_1.encode(serverOutput);
         byteBuffer.compact();
         byteBuffer.flip();
@@ -154,7 +157,7 @@ public class Server implements AutoCloseable {
         try {
             socketChannel.write(byteBuffer);
         } catch (IOException e) {
-            System.out.println("A client has disconnected from the server");
+            System.out.println("A client has disconnected from the server\n");
             key.cancel();
         }
 
@@ -162,6 +165,7 @@ public class Server implements AutoCloseable {
 
     /**
      * Executes the query sent from the client
+     *
      * @param query the user's query
      * @return a string representing the result
      * @throws IllegalGameQueryException representing an invalid query
@@ -169,22 +173,32 @@ public class Server implements AutoCloseable {
     @NotNull
     private String gameSession(@NotNull String query) throws IllegalGameQueryException {
         final int START_MONEY = 1000000;
+
+        // if new-user -> make a new user in the server buffer
         if (query.equals("new-user")) {
             System.out.println("Creating a new user...");
             var newId = UUID.randomUUID();
             this.serverData.put(newId, START_MONEY);
             return "user-id " + newId + " amount " + START_MONEY;
         }
+
+        // the query uses an existing user - split the queries
         var queryFragments = query.split(" ");
         UUID userId;
+
+        //try parsing the user ID
         try {
             userId = UUID.fromString(queryFragments[2]);
         } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
             throw new IllegalGameQueryException();
         }
+
+        // if the user is not found -> invalid query
         if (!this.serverData.containsKey(userId)) {
             throw new IllegalGameQueryException(userId);
         }
+
+        //initiate a new game?
         if (query.substring(0, 17).equals("new-game user-id ") && queryFragments[3].equals("bet-money")) {
             int betMoney;
             try {
@@ -194,32 +208,42 @@ public class Server implements AutoCloseable {
             }
             return gameResult(userId, betMoney);
         }
+
+        // quit a game -> remove the user ID from the buffer
         if (query.substring(0, 18).equals("quit-game user-id ")) {
             serverData.remove(userId);
             return "User ID " + userId + " have quit. Have a nice day!";
         }
+
         //the query is probably gibberish. Exception time!
         throw new IllegalGameQueryException();
     }
 
     /**
      * Initiate a new game and modify the server's buffer accordingly
+     *
      * @param userId the user's {@link UUID} value
      * @param betMoney the amount of cash that the user has bet
      * @return a new string representing the result of the game
      */
     @NotNull
     private String gameResult(final UUID userId, final int betMoney) {
+        //prepare stuff
         var rtn = new StringBuilder();
         var drawnCards = new ArrayList<Card>();
         var clientScore = new Score();
         var serverScore = new Score();
+
+        // draw 6 cards
         for (int i = 0; i < 6; i++) {
+            //ensure that all cards are unique
             var card = new Card();
             while (drawnCards.contains(card)) {
                 card = new Card();
             }
             drawnCards.add(card);
+
+            // draw cards sequentially: client -> server -> client -> ...
             if (i % 2 == 0) {
                 clientScore.setPoint(card);
                 var str = "Client card " + card.toString() + "\n";
@@ -230,9 +254,11 @@ public class Server implements AutoCloseable {
                 rtn.append(str);
             }
         }
-        rtn.append("Server point: ").append(serverScore.getPoint()).append("\nYour point: ")
-                .append(serverScore.getPoint()).append("\n");
 
+        rtn.append("Server point: ").append(serverScore.getPoint()).append("\nYour point: ")
+                .append(clientScore.getPoint()).append("\n");
+
+        //determine who won the game
         var winState = clientScore.compareTo(serverScore);
         if (winState > 0) {
             clientWinProtocol(userId, betMoney, rtn);
@@ -267,6 +293,8 @@ public class Server implements AutoCloseable {
         serverData.computeIfPresent(userId, (k,v) -> v - betMoney);
         var cash = serverData.get(userId);
         rtn.append("You lost! Your current money is ").append(cash).append("\n");
+
+        //if the amount of cash is negative -> kicks the user out
         if (cash < 1) {
             rtn.append("You've lost all of the cash. Come back next time.");
             serverData.remove(userId);

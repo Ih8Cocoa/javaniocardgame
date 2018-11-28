@@ -24,16 +24,22 @@ public class Client implements AutoCloseable {
      * @param query the query from the user
      * @throws IOException something throws it idk, just pass it to main
      */
-    public void query(String query) throws IOException {
+    public String query(String query) throws IOException {
+        //encode query and send to server
         var buffer = StandardCharsets.ISO_8859_1.encode(query);
         buffer.compact();
         buffer.flip();
         socketChannel.write(buffer);
+
+        //receive response from server and decode to string
         buffer = ByteBuffer.allocate(1048576);
         socketChannel.read(buffer);
         buffer.flip();
         var charBuffer = StandardCharsets.ISO_8859_1.decode(buffer);
         var response = new String(charBuffer.array()).trim();
+
+        //write the response to console
         System.out.println(response);
+        return response;
     }
 }

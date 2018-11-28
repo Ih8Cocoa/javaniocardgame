@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="testnio2:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/testnio2_jar</output-path>
+    <root id="archive" name="testnio2.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/xd/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="testnio2" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/16.0.2/annotations-16.0.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

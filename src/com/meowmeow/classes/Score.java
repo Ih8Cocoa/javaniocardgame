@@ -87,7 +87,7 @@ public class Score implements Comparable<Score> {
         if (this.point > 10) {
             this.point %= 10;
         }
-        final var aceOfDiamond = new Card(1,1);
+        final var aceOfDiamond = new Card(1,3);
         if (card.equals(aceOfDiamond)) {
             winFallback = true;
         }

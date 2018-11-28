@@ -2,6 +2,18 @@ package com.meowmeow.classes;
 
 import java.util.Random;
 
+/**
+ * <h3>Card class</h3>
+ * <p>A single Card has the following attributes:</p>
+ * <ul>
+ *     <li>
+ *         A card type: Ace, Two, Three, etc... up to a King, with each of their values vary from 1 to 13
+ *     </li>
+ *     <li>
+ *         A suit - Spades, Clubs, Diamonds or Hearts, with values vary from 1 to 4
+ *     </li>
+ * </ul>
+ */
 public class Card {
     private enum Suit {
         SPADES(1), CLUBS(2), DIAMONDS(3), HEARTS(4);
@@ -26,6 +38,9 @@ public class Card {
     private Type type;
     private Suit suit;
 
+    /**
+     * Creates a random card
+     */
     public Card() {
         var random = new Random();
         var allTypes = Type.values();
@@ -34,6 +49,11 @@ public class Card {
         this.suit = allSuits[random.nextInt(4)];
     }
 
+    /**
+     * Creates a predefined card based on the values passed in
+     * @param type The type of the card
+     * @param suit The card's suit code
+     */
     public Card(int type, int suit) {
         var allTypes = Type.values();
         var allSuits = Suit.values();
