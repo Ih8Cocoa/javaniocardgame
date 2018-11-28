@@ -215,13 +215,12 @@ public class Server implements AutoCloseable {
 
         //initiate a new game?
         if (query.substring(0, 17).equals("new-game user-id ") && queryFragments[3].equals("bet-money")) {
-            int betMoney;
             try {
-                betMoney = Integer.parseInt(queryFragments[4]);
+                var betMoney = Integer.parseInt(queryFragments[4]);
+                return gameResult(userId, betMoney);
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 throw new IllegalGameQueryException();
             }
-            return gameResult(userId, betMoney);
         }
 
         // quit a game -> remove the user ID from the buffer
