@@ -11,7 +11,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -133,10 +133,10 @@ public class Server implements AutoCloseable {
      *     Process a query from the client. Haven't implemented a query buffer yet, so the query has to be
      *     resolved immediately.
      * </p>
+     *
      * @param key to extract the {@link SocketChannel}
-     * @throws IOException bounce this exception to main
      */
-    private void processRequest(@NotNull SelectionKey key) throws IOException {
+    private void processRequest(@NotNull SelectionKey key) {
         // get socket channel and prepare the reading buffer
         var socketChannel = (SocketChannel) key.channel();
         var byteBuffer = ByteBuffer.allocate(1048576);
@@ -244,18 +244,17 @@ public class Server implements AutoCloseable {
     private String gameResult(final UUID userId, final int betMoney) {
         //prepare stuff
         var rtn = new StringBuilder();
-        var drawnCards = new ArrayList<Card>();
+        var drawnCardsStr = new HashSet<String>();
         var clientScore = new Score();
         var serverScore = new Score();
 
         // draw 6 cards
         for (int i = 0; i < 6; i++) {
-            //ensure that all cards are unique
+            //ensure that all card's uniqueness by storing each card's string form into a HashSet
             var card = new Card();
-            while (drawnCards.contains(card)) {
+            while (!drawnCardsStr.add(card.toString())) {
                 card = new Card();
             }
-            drawnCards.add(card);
 
             // draw cards sequentially: client -> server -> client -> ...
             if (i % 2 == 0) {
